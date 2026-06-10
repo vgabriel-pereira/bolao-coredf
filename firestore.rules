@@ -1,0 +1,56 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    // Considera admin qualquer usuário autenticado (o projeto usa um único
+    // e-mail/senha de admin registrado no Firebase Authentication)
+    function isAdmin() {
+      return request.auth != null;
+    }
+
+    // ── Jogos ─────────────────────────────────────────────────────────────────
+    // Qualquer pessoa pode ler; apenas admin pode criar/editar/excluir
+    match /jogos/{jogoId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ── Palpites ──────────────────────────────────────────────────────────────
+    // Qualquer pessoa pode ler e criar (insert only)
+    // Apenas admin pode atualizar (status_pagamento) ou excluir
+    match /palpites/{palpiteId} {
+      allow read: if true;
+
+      // Criação pública: não permite sobrescrever status_pagamento
+      // (ele é sempre definido como "pendente" no server via Cloud Function
+      //  ou fixado no cliente — esta regra garante que o campo não venha adulterado)
+      allow create: if request.auth == null
+        && request.resource.data.status_pagamento == "pendente"
+        && request.resource.data.keys().hasAll([
+             "jogo_id", "participante_nome",
+             "gols_brasil", "gols_adversario",
+             "status_pagamento", "criado_em"
+           ]);
+
+      // Admin pode atualizar qualquer campo (inclusive status_pagamento)
+      allow update, delete: if isAdmin();
+    }
+
+    // ── Apurações ─────────────────────────────────────────────────────────────
+    // Qualquer pessoa pode ler; apenas admin pode escrever
+    match /apuracoes/{apuracaoId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Configurações ─────────────────────────────────────────────────────────
+    // Qualquer pessoa pode ler (necessário para exibir chave PIX / valor);
+    // apenas admin pode escrever
+    match /config/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

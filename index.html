@@ -2,7 +2,10 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0D5C2D">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Bolão da Copa — Core-DF</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -32,8 +35,9 @@
         <div class="title-sub">Core-DF · Seleção Brasileira</div>
       </div>
     </div>
+    <!-- Nav visível apenas em tablet/desktop; no mobile usa bottom-nav -->
     <nav class="header-nav">
-      <a href="#palpitar" class="active">Apostar</a>
+      <a href="#palpitar">Apostar</a>
       <a href="#palpites">Palpites</a>
       <a href="#historico">Histórico</a>
       <a href="admin.html">Admin</a>
@@ -41,7 +45,23 @@
   </div>
 </header>
 
-<main class="container">
+<!-- Bottom nav (mobile only) -->
+<nav class="bottom-nav" id="bottom-nav">
+  <a href="#palpitar" class="active" data-section="palpitar">
+    <span class="nav-icon">🎯</span>Apostar
+  </a>
+  <a href="#palpites" data-section="palpites">
+    <span class="nav-icon">📋</span>Palpites
+  </a>
+  <a href="#historico" data-section="historico">
+    <span class="nav-icon">🏆</span>Histórico
+  </a>
+  <a href="admin.html">
+    <span class="nav-icon">⚙️</span>Admin
+  </a>
+</nav>
+
+<main class="container has-bottom-nav">
 
   <!-- ACUMULADO -->
   <div class="hero-acumulado" id="hero-acumulado">
@@ -51,7 +71,7 @@
   </div>
 
   <!-- STATS -->
-  <div class="grid-3" style="margin-bottom:1.5rem" id="stats-grid">
+  <div class="grid-3" id="stats-grid">
     <div class="stat-card">
       <div class="stat-label">Total de palpites</div>
       <div class="stat-value" id="stat-total-palpites">—</div>
@@ -69,7 +89,7 @@
     </div>
   </div>
 
-  <div class="grid-2" style="margin-bottom:1.5rem">
+  <div class="grid-2">
 
     <!-- PRÓXIMO JOGO -->
     <div class="proximo-jogo" id="proximo-jogo-card">
@@ -130,7 +150,7 @@
   </div>
 
   <!-- LISTA DE PALPITES -->
-  <div class="card" id="palpites" style="margin-bottom:1.5rem">
+  <div class="card" id="palpites">
     <div class="card-header">
       <div class="card-title">
         <span class="icon">📋</span>
@@ -497,22 +517,22 @@ function renderHistorico(apuracoes) {
         </div>
         <div class="historico-body">
           <div class="historico-placar">Brasil ${a.placar_brasil} × ${a.placar_adversario} ${a.adversario}</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+          <div class="historico-stats-grid">
             <div>
-              <div style="font-size:.75rem;color:var(--cinza-texto);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Arrecadado</div>
-              <div style="font-weight:700;font-size:1.1rem">${formatarMoeda(a.valor_arrecadado)}</div>
+              <div class="historico-stat-label">Arrecadado</div>
+              <div class="historico-stat-value">${formatarMoeda(a.valor_arrecadado)}</div>
             </div>
             <div>
-              <div style="font-size:.75rem;color:var(--cinza-texto);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Acumulado anterior</div>
-              <div style="font-weight:700;font-size:1.1rem">${formatarMoeda(a.acumulado_anterior)}</div>
+              <div class="historico-stat-label">Acumulado anterior</div>
+              <div class="historico-stat-value">${formatarMoeda(a.acumulado_anterior)}</div>
             </div>
             <div>
-              <div style="font-size:.75rem;color:var(--cinza-texto);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Premiação total</div>
-              <div style="font-weight:800;font-size:1.2rem;color:var(--verde)">${formatarMoeda(a.valor_total)}</div>
+              <div class="historico-stat-label">Premiação total</div>
+              <div class="historico-stat-value" style="color:var(--verde)">${formatarMoeda(a.valor_total)}</div>
             </div>
             <div>
-              <div style="font-size:.75rem;color:var(--cinza-texto);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Por vencedor</div>
-              <div style="font-weight:800;font-size:1.2rem;color:var(--amarelo-esc)">${a.quantidade_vencedores > 0 ? formatarMoeda(a.valor_por_vencedor) : "—"}</div>
+              <div class="historico-stat-label">Por vencedor</div>
+              <div class="historico-stat-value" style="color:var(--amarelo-esc)">${a.quantidade_vencedores > 0 ? formatarMoeda(a.valor_por_vencedor) : "—"}</div>
             </div>
           </div>
           <div class="historico-vencedores">${vencedoresHTML}</div>
@@ -523,6 +543,28 @@ function renderHistorico(apuracoes) {
 }
 
 init();
+
+// ─── BOTTOM NAV: highlight ativo conforme seção visível ───────────────────
+(function() {
+  const links = document.querySelectorAll(".bottom-nav a[data-section]");
+  const sections = ["palpitar", "palpites", "historico"];
+
+  function updateActive() {
+    let currentSection = sections[0];
+    for (const id of sections) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      const top = el.getBoundingClientRect().top;
+      if (top <= 100) currentSection = id;
+    }
+    links.forEach(a => {
+      a.classList.toggle("active", a.dataset.section === currentSection);
+    });
+  }
+
+  window.addEventListener("scroll", updateActive, { passive: true });
+  updateActive();
+})();
 </script>
 
 </body>

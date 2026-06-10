@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bolão da Copa — Core-DF</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Overlay de identificação -->
+<div class="nome-overlay" id="nome-overlay">
+  <div class="nome-card">
+    <span class="flag">🇧🇷</span>
+    <h2>Bolão da Copa</h2>
+    <p>Para participar, informe seu nome completo. Ele será exibido publicamente junto aos seus palpites.</p>
+    <div class="input-group" style="text-align:left;margin-bottom:1rem;">
+      <label for="input-nome">Seu nome</label>
+      <input type="text" id="input-nome" placeholder="Ex: João Silva" maxlength="60" autocomplete="off">
+    </div>
+    <button class="btn btn-amarelo btn-full" id="btn-entrar" onclick="entrar()">Entrar no bolão</button>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-logo">
+      <span class="flag">🇧🇷</span>
+      <div>
+        <div class="title-main">Bolão da Copa</div>
+        <div class="title-sub">Core-DF · Seleção Brasileira</div>
+      </div>
+    </div>
+    <nav class="header-nav">
+      <a href="#palpitar" class="active">Apostar</a>
+      <a href="#palpites">Palpites</a>
+      <a href="#historico">Histórico</a>
+      <a href="admin.html">Admin</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ACUMULADO -->
+  <div class="hero-acumulado" id="hero-acumulado">
+    <div class="label">💰 Prêmio acumulado</div>
+    <div class="valor" id="valor-acumulado">R$ 0,00</div>
+    <div class="subtexto" id="subtexto-acumulado">Carregando...</div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid-3" style="margin-bottom:1.5rem" id="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total de palpites</div>
+      <div class="stat-value" id="stat-total-palpites">—</div>
+      <div class="stat-sub">neste jogo</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Confirmados</div>
+      <div class="stat-value" id="stat-confirmados">—</div>
+      <div class="stat-sub">pagamento ok</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Valor em jogo</div>
+      <div class="stat-value" id="stat-valor-jogo">—</div>
+      <div class="stat-sub">+ acumulado</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:1.5rem">
+
+    <!-- PRÓXIMO JOGO -->
+    <div class="proximo-jogo" id="proximo-jogo-card">
+      <div class="proximo-jogo-header">⚽ Próximo jogo</div>
+      <div class="proximo-jogo-body" id="proximo-jogo-body">
+        <div class="empty-state">
+          <span class="emoji">🗓️</span>
+          <p>Nenhum jogo agendado</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAZER PALPITE -->
+    <div class="card" id="palpitar">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="icon">🎯</span>
+          Fazer palpite
+        </div>
+        <span id="seus-palpites-badge" style="font-size:.8rem;color:var(--cinza-texto)"></span>
+      </div>
+
+      <div id="palpite-area">
+        <!-- Renderizado via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PIX -->
+  <div class="modal-overlay" id="modal-pix">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>💸 Confirme seu pagamento</h3>
+        <button class="modal-close" onclick="fecharModalPix()">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:.9rem;color:var(--cinza-texto)">
+          Palpite registrado com sucesso! Realize o pagamento via PIX para confirmar sua participação.
+        </p>
+        <div class="pix-box">
+          <div class="pix-title">🇧🇷 Pagamento via PIX</div>
+          <div class="pix-valor">R$ 10,00</div>
+          <img id="pix-qrcode-img" src="" alt="QR Code PIX" style="max-width:180px">
+          <div style="font-size:.8rem;color:var(--cinza-texto);margin:.5rem 0">Chave PIX:</div>
+          <div class="pix-chave" id="pix-chave-texto">—</div>
+          <button class="btn btn-outline btn-sm" onclick="copiarChave()" style="margin-top:.75rem">
+            📋 Copiar chave
+          </button>
+        </div>
+        <div style="background:#FEF9C3;border-radius:8px;padding:.75rem;font-size:.82rem;color:#854D0E">
+          ⚠️ Seu palpite só será válido após confirmação do pagamento pelo administrador.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="fecharModalPix()">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTA DE PALPITES -->
+  <div class="card" id="palpites" style="margin-bottom:1.5rem">
+    <div class="card-header">
+      <div class="card-title">
+        <span class="icon">📋</span>
+        Palpites do jogo
+      </div>
+      <span id="badge-total-palpites" class="badge badge-agendado">0 apostas</span>
+    </div>
+    <div id="lista-palpites">
+      <div class="empty-state">
+        <span class="emoji">📭</span>
+        <p>Nenhum palpite registrado ainda.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTÓRICO -->
+  <div class="card" id="historico">
+    <div class="card-header">
+      <div class="card-title">
+        <span class="icon">🏆</span>
+        Histórico de premiações
+      </div>
+    </div>
+    <div id="lista-historico">
+      <div class="empty-state">
+        <span class="emoji">📜</span>
+        <p>Nenhuma apuração realizada ainda.</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div id="toast-container"></div>
+
+<script type="module">
+import { onConfig, onPalpitesDoJogo, getProximoJogo, getPalpitesDoParticipante, registrarPalpite, getApuracoes } from "./js/db.js";
+import { formatarData, formatarDataHora, formatarMoeda, badgePagamento, calcularCountdown, prazoEncerrado, toast, abrirModal, fecharModal, setLoading } from "./js/ui.js";
+
+// ─── ESTADO ───────────────────────────────────────────────────────────────────
+let nomeParticipante = localStorage.getItem("bolao_nome") || "";
+let jogoAtual = null;
+let configAtual = null;
+let palpitesAtuais = [];
+let golsBrasil = 1;
+let golsAdversario = 0;
+let countdownInterval = null;
+let unsubPalpites = null;
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+async function init() {
+  if (!nomeParticipante) {
+    document.getElementById("nome-overlay").style.display = "flex";
+  }
+
+  // Observa config em tempo real
+  onConfig((config) => {
+    configAtual = config;
+    if (config) {
+      document.getElementById("valor-acumulado").textContent = formatarMoeda(config.acumulado_atual ?? 0);
+    }
+  });
+
+  // Carrega próximo jogo
+  jogoAtual = await getProximoJogo();
+  renderProximoJogo();
+  renderPalpiteArea();
+
+  // Observa palpites do jogo atual
+  if (jogoAtual) {
+    unsubPalpites = onPalpitesDoJogo(jogoAtual.id, (palpites) => {
+      palpitesAtuais = palpites;
+      renderListaPalpites(palpites);
+      atualizarStats(palpites);
+    });
+  }
+
+  // Carrega histórico
+  const apuracoes = await getApuracoes();
+  renderHistorico(apuracoes);
+}
+
+// ─── IDENTIFICAÇÃO ────────────────────────────────────────────────────────────
+window.entrar = function() {
+  const nome = document.getElementById("input-nome").value.trim();
+  if (!nome || nome.length < 2) {
+    toast("Informe seu nome completo.", "error");
+    return;
+  }
+  nomeParticipante = nome;
+  localStorage.setItem("bolao_nome", nome);
+  document.getElementById("nome-overlay").style.display = "none";
+  renderPalpiteArea();
+};
+
+document.getElementById("input-nome").addEventListener("keydown", e => {
+  if (e.key === "Enter") window.entrar();
+});
+
+// ─── PRÓXIMO JOGO ─────────────────────────────────────────────────────────────
+function renderProximoJogo() {
+  const body = document.getElementById("proximo-jogo-body");
+  if (!jogoAtual) {
+    body.innerHTML = `<div class="empty-state"><span class="emoji">🗓️</span><p>Nenhum jogo agendado</p></div>`;
+    return;
+  }
+
+  const encerrado = prazoEncerrado(jogoAtual.data);
+  body.innerHTML = `
+    <div class="confronto">
+      <div class="placar-team">
+        <div class="time-flag">🇧🇷</div>
+        <div class="time-nome">Brasil</div>
+      </div>
+      <span class="vs-badge">VS</span>
+      <div class="placar-team">
+        <div class="time-flag">🏳️</div>
+        <div class="time-nome">${jogoAtual.adversario}</div>
+      </div>
+    </div>
+    <div class="jogo-info">📅 ${formatarDataHora(jogoAtual.data)}</div>
+    <div id="countdown-box">
+      ${encerrado
+        ? `<div class="countdown-encerrado">⛔ Apostas encerradas</div>`
+        : `<div class="countdown" id="countdown"></div>`
+      }
+    </div>
+  `;
+
+  if (!encerrado) iniciarCountdown();
+}
+
+function iniciarCountdown() {
+  if (countdownInterval) clearInterval(countdownInterval);
+
+  function atualizar() {
+    const el = document.getElementById("countdown");
+    if (!el || !jogoAtual) return;
+    const c = calcularCountdown(jogoAtual.data);
+    if (!c || c.encerrado) {
+      clearInterval(countdownInterval);
+      document.getElementById("countdown-box").innerHTML =
+        `<div class="countdown-encerrado">⛔ Apostas encerradas</div>`;
+      renderPalpiteArea();
+      return;
+    }
+    el.innerHTML = `
+      <div class="countdown-unit"><span class="countdown-num">${String(c.dias).padStart(2,"0")}</span><span class="countdown-label">dias</span></div>
+      <div class="countdown-unit"><span class="countdown-num">${String(c.horas).padStart(2,"0")}</span><span class="countdown-label">horas</span></div>
+      <div class="countdown-unit"><span class="countdown-num">${String(c.min).padStart(2,"0")}</span><span class="countdown-label">min</span></div>
+      <div class="countdown-unit"><span class="countdown-num">${String(c.seg).padStart(2,"0")}</span><span class="countdown-label">seg</span></div>
+    `;
+  }
+
+  atualizar();
+  countdownInterval = setInterval(atualizar, 1000);
+}
+
+// ─── ÁREA DE PALPITE ──────────────────────────────────────────────────────────
+async function renderPalpiteArea() {
+  const area = document.getElementById("palpite-area");
+  const badge = document.getElementById("seus-palpites-badge");
+
+  if (!nomeParticipante) {
+    area.innerHTML = `<div class="empty-state"><span class="emoji">👤</span><p>Identifique-se para apostar.</p></div>`;
+    return;
+  }
+
+  if (!jogoAtual || jogoAtual.status !== "agendado") {
+    area.innerHTML = `<div class="empty-state"><span class="emoji">🔒</span><p>Nenhum jogo disponível para apostas.</p></div>`;
+    return;
+  }
+
+  const encerrado = prazoEncerrado(jogoAtual.data);
+  if (encerrado) {
+    area.innerHTML = `<div class="empty-state"><span class="emoji">⛔</span><p>O prazo para palpites encerrou.</p></div>`;
+    return;
+  }
+
+  // Verifica palpites já feitos
+  const meusPalpites = await getPalpitesDoParticipante(jogoAtual.id, nomeParticipante);
+  const qtd = meusPalpites.length;
+  badge.textContent = `${qtd}/2 palpites`;
+
+  if (qtd >= 2) {
+    const lista = meusPalpites.map(p =>
+      `<div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--cinza-borda)">
+        <span style="font-weight:700;font-size:1.1rem">Brasil ${p.gols_brasil} x ${p.gols_adversario} ${jogoAtual.adversario}</span>
+        ${badgePagamento(p.status_pagamento)}
+      </div>`
+    ).join("");
+    area.innerHTML = `
+      <p style="font-size:.85rem;color:var(--cinza-texto);margin-bottom:.75rem">Você já registrou 2 palpites para este jogo:</p>
+      ${lista}
+    `;
+    return;
+  }
+
+  // Formulário
+  area.innerHTML = `
+    <div class="palpite-form">
+      <p style="font-size:.85rem;color:var(--cinza-texto)">Apostando como <strong>${nomeParticipante}</strong> · <a href="#" onclick="trocarNome(event)" style="color:var(--verde)">trocar</a></p>
+      <div class="placar-seletor">
+        <div class="placar-team">
+          <div class="placar-team-nome">🇧🇷 Brasil</div>
+          <div class="placar-input">
+            <button type="button" onclick="ajustar('brasil',-1)">−</button>
+            <div class="placar-num" id="num-brasil">${golsBrasil}</div>
+            <button type="button" onclick="ajustar('brasil',1)">+</button>
+          </div>
+        </div>
+        <div class="placar-x">×</div>
+        <div class="placar-team">
+          <div class="placar-team-nome">${jogoAtual.adversario}</div>
+          <div class="placar-input">
+            <button type="button" onclick="ajustar('adv',-1)">−</button>
+            <div class="placar-num" id="num-adv">${golsAdversario}</div>
+            <button type="button" onclick="ajustar('adv',1)">+</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-amarelo btn-full" id="btn-palpitar" onclick="enviarPalpite()">
+        🎯 Registrar palpite (R$ 10,00)
+      </button>
+    </div>
+  `;
+}
+
+window.ajustar = function(time, delta) {
+  if (time === "brasil") {
+    golsBrasil = Math.max(0, Math.min(20, golsBrasil + delta));
+    document.getElementById("num-brasil").textContent = golsBrasil;
+  } else {
+    golsAdversario = Math.max(0, Math.min(20, golsAdversario + delta));
+    document.getElementById("num-adv").textContent = golsAdversario;
+  }
+};
+
+window.enviarPalpite = async function() {
+  const btn = document.getElementById("btn-palpitar");
+  if (!jogoAtual || !nomeParticipante) return;
+
+  // Validações client-side
+  const meusPalpites = await getPalpitesDoParticipante(jogoAtual.id, nomeParticipante);
+  if (meusPalpites.length >= 2) { toast("Você já registrou 2 palpites.", "error"); return; }
+
+  const duplicado = meusPalpites.find(p => p.gols_brasil === golsBrasil && p.gols_adversario === golsAdversario);
+  if (duplicado) { toast("Você já apostou neste placar.", "error"); return; }
+
+  if (prazoEncerrado(jogoAtual.data)) { toast("Prazo de apostas encerrado.", "error"); return; }
+
+  setLoading(btn, true);
+  try {
+    await registrarPalpite({
+      jogo_id: jogoAtual.id,
+      participante_nome: nomeParticipante,
+      gols_brasil: golsBrasil,
+      gols_adversario: golsAdversario
+    });
+
+    toast("Palpite registrado! Realize o pagamento para confirmar.", "success");
+    abrirModalPix();
+    golsBrasil = 1; golsAdversario = 0;
+    await renderPalpiteArea();
+  } catch (e) {
+    toast("Erro ao registrar palpite. Tente novamente.", "error");
+    console.error(e);
+  } finally {
+    setLoading(btn, false);
+  }
+};
+
+window.trocarNome = function(e) {
+  e.preventDefault();
+  localStorage.removeItem("bolao_nome");
+  nomeParticipante = "";
+  document.getElementById("input-nome").value = "";
+  document.getElementById("nome-overlay").style.display = "flex";
+};
+
+// ─── MODAL PIX ────────────────────────────────────────────────────────────────
+function abrirModalPix() {
+  if (configAtual) {
+    document.getElementById("pix-qrcode-img").src = configAtual.pix_qrcode_url || "";
+    document.getElementById("pix-chave-texto").textContent = configAtual.pix_chave || "—";
+  }
+  abrirModal("modal-pix");
+}
+
+window.fecharModalPix = () => fecharModal("modal-pix");
+
+window.copiarChave = function() {
+  const chave = document.getElementById("pix-chave-texto").textContent;
+  navigator.clipboard.writeText(chave).then(() => toast("Chave PIX copiada!", "success"));
+};
+
+// ─── LISTA DE PALPITES ────────────────────────────────────────────────────────
+function renderListaPalpites(palpites) {
+  const el = document.getElementById("lista-palpites");
+  const badge = document.getElementById("badge-total-palpites");
+  badge.textContent = `${palpites.length} apostas`;
+
+  if (!palpites.length) {
+    el.innerHTML = `<div class="empty-state"><span class="emoji">📭</span><p>Nenhum palpite registrado ainda.</p></div>`;
+    return;
+  }
+
+  const adversario = jogoAtual?.adversario || "Adversário";
+  const rows = palpites.map(p => `
+    <tr>
+      <td><strong>${p.participante_nome}</strong></td>
+      <td class="placar-cell">Brasil ${p.gols_brasil} × ${p.gols_adversario} ${adversario}</td>
+      <td>${badgePagamento(p.status_pagamento)}</td>
+      <td style="font-size:.78rem;color:var(--cinza-texto)">${p.criado_em ? formatarDataHora(p.criado_em) : "—"}</td>
+    </tr>
+  `).join("");
+
+  el.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Participante</th><th>Palpite</th><th>Pagamento</th><th>Horário</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ─── STATS ────────────────────────────────────────────────────────────────────
+function atualizarStats(palpites) {
+  const total = palpites.length;
+  const confirmados = palpites.filter(p => p.status_pagamento === "confirmado").length;
+  const valorPalpite = configAtual?.valor_por_palpite ?? 10;
+  const acumulado = configAtual?.acumulado_atual ?? 0;
+  const valorJogo = confirmados * valorPalpite + acumulado;
+
+  document.getElementById("stat-total-palpites").textContent = total;
+  document.getElementById("stat-confirmados").textContent = confirmados;
+  document.getElementById("stat-valor-jogo").textContent = formatarMoeda(valorJogo);
+
+  if (configAtual) {
+    document.getElementById("subtexto-acumulado").textContent =
+      acumulado > 0 ? `${confirmados} palpites confirmados neste jogo` : `${confirmados} palpites confirmados`;
+  }
+}
+
+// ─── HISTÓRICO ────────────────────────────────────────────────────────────────
+function renderHistorico(apuracoes) {
+  const el = document.getElementById("lista-historico");
+  if (!apuracoes.length) {
+    el.innerHTML = `<div class="empty-state"><span class="emoji">📜</span><p>Nenhuma apuração realizada ainda.</p></div>`;
+    return;
+  }
+
+  el.innerHTML = apuracoes.map(a => {
+    const vencedoresHTML = a.vencedores?.length
+      ? a.vencedores.map(v => `<span class="vencedor-chip">🏆 ${v.nome}</span>`).join("")
+      : `<span style="color:var(--cinza-texto);font-size:.88rem">Nenhum vencedor — valor acumulado</span>`;
+
+    return `
+      <div class="historico-item">
+        <div class="historico-header">
+          <strong>🇧🇷 Brasil × ${a.adversario}</strong>
+          <span>${a.criado_em ? formatarData(a.criado_em) : ""}</span>
+        </div>
+        <div class="historico-body">
+          <div class="historico-placar">Brasil ${a.placar_brasil} × ${a.placar_adversario} ${a.adversario}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+            <div>
+              <div style="font-size:.75rem;color:var(--cinza-texto);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Arrecadado</div>
+              <div style="font-weight:700;font-size:1.1rem">${formatarMoeda(a.valor_arrecadado)}</div>
+            </div>
+            <div>
+              <div style="font-size:.75rem;color:var(--cinza-texto);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Acumulado anterior</div>
+              <div style="font-weight:700;font-size:1.1rem">${formatarMoeda(a.acumulado_anterior)}</div>
+            </div>
+            <div>
+              <div style="font-size:.75rem;color:var(--cinza-texto);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Premiação total</div>
+              <div style="font-weight:800;font-size:1.2rem;color:var(--verde)">${formatarMoeda(a.valor_total)}</div>
+            </div>
+            <div>
+              <div style="font-size:.75rem;color:var(--cinza-texto);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Por vencedor</div>
+              <div style="font-weight:800;font-size:1.2rem;color:var(--amarelo-esc)">${a.quantidade_vencedores > 0 ? formatarMoeda(a.valor_por_vencedor) : "—"}</div>
+            </div>
+          </div>
+          <div class="historico-vencedores">${vencedoresHTML}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+init();
+</script>
+
+</body>
+</html>

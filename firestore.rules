@@ -16,7 +16,7 @@ service cloud.firestore {
     match /participantes/{uid} {
       allow read: if true;
       allow create: if request.resource.data.keys().hasAll([
-             "nome", "pix_chave", "short_id", "criado_em"
+             "nome", "nome_lower", "pix_chave", "short_id", "criado_em"
            ]);
       allow update, delete: if isAdmin();
     }

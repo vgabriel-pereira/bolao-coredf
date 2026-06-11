@@ -188,7 +188,7 @@
 <div id="toast-container"></div>
 
 <script type="module">
-import { onConfig, onPalpitesDoJogo, onJogos, getJogos, getPalpitesDoParticipante, registrarPalpite, getApuracoes, getParticipante, criarParticipante } from "./js/db.js";
+import { onConfig, onPalpitesDoJogo, onJogos, getJogos, getPalpitesDoParticipante, registrarPalpite, getApuracoes, getParticipante, criarParticipante, buscarParticipantePorNomePix, buscarParticipantePorNome } from "./js/db.js";
 import { formatarData, formatarDataHora, formatarMoeda, badgePagamento, calcularCountdown, prazoEncerrado, toast, abrirModal, fecharModal, setLoading } from "./js/ui.js";
 
 // ── ESTADO ────────────────────────────────────────────────────────────────────
@@ -243,15 +243,50 @@ window.cadastrar = async function() {
   const btn = document.getElementById("btn-cadastrar");
   setLoading(btn, true);
   try {
+    // 1. Verificar se já existe participante com esse nome
+    const existente = await buscarParticipantePorNome(nome);
+
+    if (existente) {
+      // Nome já existe — verificar se a chave PIX bate (recuperação de conta)
+      const pixExistente = existente.pix_chave?.toLowerCase().trim();
+      const pixInformado = pix.toLowerCase().trim();
+
+      if (pixExistente === pixInformado) {
+        // ✅ Mesmos nome + PIX → recuperar conta existente
+        participanteId   = existente.id;
+        participanteNome = existente.nome;
+        participantePix  = existente.pix_chave;
+        const shortId = existente.short_id || existente.id.slice(0,8).toUpperCase();
+        localStorage.setItem("bolao_uid",   existente.id);
+        localStorage.setItem("bolao_nome",  existente.nome);
+        localStorage.setItem("bolao_pix",   existente.pix_chave);
+        localStorage.setItem("bolao_short", shortId);
+        document.getElementById("overlay-cadastro").style.display = "none";
+        mostrarIdBar();
+        renderPalpiteArea();
+        toast(`Bem-vindo de volta, ${existente.nome}! ✅`, "success");
+      } else {
+        // ❌ Nome existe mas PIX não bate → nome já pertence a outro participante
+        toast("Este nome já está em uso. Se é você, informe a mesma chave PIX cadastrada. Caso contrário, escolha outro nome.", "error");
+      }
+      return;
+    }
+
+    // 2. Nome novo → criar participante
     const uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
     const shortId = uid.slice(0,8).toUpperCase();
-    await criarParticipante(uid, { nome, pix_chave: pix, short_id: shortId });
+    await criarParticipante(uid, {
+      nome,
+      nome_lower: nome.toLowerCase(),  // campo para busca case-insensitive
+      pix_chave: pix,
+      short_id: shortId
+    });
     participanteId   = uid;
     participanteNome = nome;
     participantePix  = pix;
-    localStorage.setItem("bolao_uid", uid);
-    localStorage.setItem("bolao_nome", nome);
-    localStorage.setItem("bolao_pix", pix);
+    localStorage.setItem("bolao_uid",   uid);
+    localStorage.setItem("bolao_nome",  nome);
+    localStorage.setItem("bolao_pix",   pix);
     localStorage.setItem("bolao_short", shortId);
     document.getElementById("overlay-cadastro").style.display = "none";
     mostrarIdBar();

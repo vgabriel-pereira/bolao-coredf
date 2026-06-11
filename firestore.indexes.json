@@ -1,6 +1,13 @@
 {
   "indexes": [
     {
+      "collectionGroup": "participantes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "nome_lower", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "palpites",
       "queryScope": "COLLECTION",
       "fields": [

@@ -29,6 +29,29 @@ export async function getParticipantes() {
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
+/**
+ * Busca participante pelo nome (case-insensitive, normalizado) E chave PIX.
+ * Retorna o participante se nome + pix coincidirem, ou null.
+ */
+export async function buscarParticipantePorNomePix(nome, pix) {
+  const nomeNorm = nome.trim().toLowerCase();
+  const snap = await getDocs(query(collection(db, "participantes"), where("nome_lower", "==", nomeNorm)));
+  if (snap.empty) return null;
+  const match = snap.docs.find(d => d.data().pix_chave?.toLowerCase().trim() === pix.trim().toLowerCase());
+  return match ? { id: match.id, ...match.data() } : null;
+}
+
+/**
+ * Verifica se já existe um participante com esse nome (case-insensitive).
+ * Retorna o participante encontrado ou null.
+ */
+export async function buscarParticipantePorNome(nome) {
+  const nomeNorm = nome.trim().toLowerCase();
+  const snap = await getDocs(query(collection(db, "participantes"), where("nome_lower", "==", nomeNorm)));
+  if (snap.empty) return null;
+  return { id: snap.docs[0].id, ...snap.docs[0].data() };
+}
+
 // ─── JOGOS ────────────────────────────────────────────────────────────────────
 export async function getJogos() {
   const snap = await getDocs(query(collection(db, "jogos"), orderBy("data", "asc")));

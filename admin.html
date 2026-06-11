@@ -2,182 +2,125 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0D5C2D">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin — Bolão da Copa</title>
   <link rel="stylesheet" href="css/admin.css">
+  <meta name="theme-color" content="#083d1e">
 </head>
 <body>
 
-<!-- ── LOGIN ─────────────────────────────────────────────────────────────── -->
-<div id="tela-login" class="login-wrap">
+<!-- LOGIN -->
+<div id="tela-login" class="login-wrap" style="display:none">
   <div class="login-card">
-    <div class="flag">🇧🇷</div>
-    <h1>Área Administrativa</h1>
-    <p>Acesso restrito aos organizadores do bolão</p>
-    <div class="login-form">
-      <div id="login-error" class="login-error">E-mail ou senha incorretos.</div>
-      <div class="input-group">
-        <label>E-mail</label>
-        <input type="email" id="login-email" placeholder="admin@coredf.com">
-      </div>
-      <div class="input-group">
-        <label>Senha</label>
-        <input type="password" id="login-senha" placeholder="••••••••">
-      </div>
+    <div style="font-size:2.2rem">🇧🇷</div>
+    <h1>Área Admin</h1>
+    <p>Acesso restrito aos organizadores</p>
+    <div class="form-col">
+      <div id="login-err" class="login-err">E-mail ou senha incorretos.</div>
+      <div class="ig"><label>E-mail</label><input type="email" id="l-email" placeholder="admin@coredf.com"></div>
+      <div class="ig"><label>Senha</label><input type="password" id="l-senha" placeholder="••••••••"></div>
       <button class="btn btn-primary btn-full" id="btn-login" onclick="fazerLogin()">Entrar</button>
     </div>
   </div>
 </div>
 
-<!-- ── PAINEL ─────────────────────────────────────────────────────────────── -->
+<!-- PAINEL -->
 <div id="tela-painel" style="display:none">
-
-  <!-- Header -->
   <header class="header">
     <div class="header-inner">
       <div class="header-logo">
         <span class="flag">🇧🇷</span>
-        <div>
-          <div class="title-main">Bolão — Admin</div>
-          <div class="title-sub">Core-DF · Painel de gestão</div>
+        <div class="logo-text">
+          <div class="logo-main">Admin · Bolão</div>
+          <div class="logo-sub" id="admin-email">—</div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:.75rem">
-        <span id="admin-email-label" class="admin-email-label" style="font-size:.82rem;color:rgba(255,255,255,.7)"></span>
-        <a href="index.html" style="color:rgba(255,255,255,.7);font-size:.82rem;white-space:nowrap">← Público</a>
-        <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,.4);white-space:nowrap" onclick="fazerLogout()">Sair</button>
+        <a href="index.html" style="color:rgba(255,255,255,.7);font-size:.78rem;white-space:nowrap">← Público</a>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,.12);color:#fff;border:none" onclick="fazerLogout()">Sair</button>
       </div>
     </div>
   </header>
 
-  <div class="admin-layout">
-
-    <!-- Sidebar -->
+  <div class="admin-wrap">
     <aside class="sidebar">
-      <div class="sidebar-section">
-        <div class="sidebar-label">Gestão</div>
-        <button class="sidebar-link active" data-tab="jogos" onclick="trocarAba('jogos',this)">
-          <span class="icon">⚽</span> Jogos
-        </button>
-        <button class="sidebar-link" data-tab="pagamentos" onclick="trocarAba('pagamentos',this)">
-          <span class="icon">💰</span> Pagamentos
-        </button>
-        <button class="sidebar-link" data-tab="apuracao" onclick="trocarAba('apuracao',this)">
-          <span class="icon">🏆</span> Apuração
-        </button>
+      <div class="sb-section">
+        <div class="sb-lbl">Gestão</div>
+        <button class="sb-btn active" onclick="aba('jogos',this)"><span class="ico">⚽</span>Jogos</button>
+        <button class="sb-btn" onclick="aba('pagamentos',this)"><span class="ico">💰</span>Pagamentos</button>
+        <button class="sb-btn" onclick="aba('apuracao',this)"><span class="ico">🏆</span>Apuração</button>
+        <button class="sb-btn" onclick="aba('participantes',this)"><span class="ico">👥</span>Participantes</button>
       </div>
-      <div class="sidebar-section">
-        <div class="sidebar-label">Financeiro</div>
-        <button class="sidebar-link" data-tab="financeiro" onclick="trocarAba('financeiro',this)">
-          <span class="icon">📊</span> Financeiro
-        </button>
-        <button class="sidebar-link" data-tab="config" onclick="trocarAba('config',this)">
-          <span class="icon">⚙️</span> Configurações
-        </button>
+      <div class="sb-section">
+        <div class="sb-lbl">Dados</div>
+        <button class="sb-btn" onclick="aba('financeiro',this)"><span class="ico">📊</span>Financeiro</button>
+        <button class="sb-btn" onclick="aba('config',this)"><span class="ico">⚙️</span>Config</button>
       </div>
     </aside>
 
-    <!-- Conteúdo -->
-    <main class="admin-content">
+    <main class="admin-main">
 
-      <!-- ── ABA: JOGOS ──────────────────────────────────────────────────── -->
+      <!-- JOGOS -->
       <div class="tab-content active" id="tab-jogos">
-        <div class="acoes-bar">
-          <h2 style="font-size:1.2rem;font-weight:700;flex:1">Jogos</h2>
-          <button class="btn btn-primary" onclick="abrirModalJogo()">+ Novo jogo</button>
+        <div class="action-bar">
+          <div class="pg-title" style="margin:0;flex:1">Jogos</div>
+          <button class="btn btn-primary btn-sm" onclick="abrirModalJogo()">+ Novo jogo</button>
         </div>
-        <div id="lista-jogos-admin">
-          <div class="empty-state"><span class="emoji">⚽</span><p>Nenhum jogo cadastrado.</p></div>
-        </div>
+        <div id="lista-jogos"><div class="empty"><span class="icon">⚽</span><p>Nenhum jogo cadastrado.</p></div></div>
       </div>
 
-      <!-- ── ABA: PAGAMENTOS ─────────────────────────────────────────────── -->
+      <!-- PAGAMENTOS -->
       <div class="tab-content" id="tab-pagamentos">
-        <div class="acoes-bar">
-          <h2 style="font-size:1.2rem;font-weight:700;flex:1">Pagamentos</h2>
-          <button class="btn btn-outline btn-sm" onclick="exportarPalpites()">⬇ Exportar CSV</button>
-        </div>
-        <div class="filtro-bar">
-          <select id="filtro-jogo-pagamentos" onchange="carregarPalpitesAdmin()">
-            <option value="">Selecione o jogo...</option>
-          </select>
-          <select id="filtro-status-pagamentos" onchange="filtrarPalpitesAdmin()">
-            <option value="">Todos os status</option>
+        <div class="pg-title">Pagamentos</div>
+        <div class="filter-bar">
+          <select id="sel-jogo-pag" onchange="carregarPagamentos()"><option value="">Selecione o jogo...</option></select>
+          <select id="sel-status-pag" onchange="filtrarPagamentos()">
+            <option value="">Todos</option>
             <option value="pendente">Pendente</option>
             <option value="confirmado">Confirmado</option>
             <option value="cancelado">Cancelado</option>
           </select>
+          <button class="btn btn-ghost btn-sm" onclick="exportarCSVPalpites()">⬇ CSV</button>
         </div>
-        <div id="lista-palpites-admin">
-          <div class="empty-state"><span class="emoji">💰</span><p>Selecione um jogo para ver os palpites.</p></div>
-        </div>
+        <div id="lista-pag"><div class="empty"><span class="icon">💰</span><p>Selecione um jogo.</p></div></div>
       </div>
 
-      <!-- ── ABA: APURAÇÃO ──────────────────────────────────────────────── -->
+      <!-- APURAÇÃO -->
       <div class="tab-content" id="tab-apuracao">
-        <div class="acoes-bar">
-          <h2 style="font-size:1.2rem;font-weight:700;flex:1">Apuração de resultados</h2>
+        <div class="pg-title">Apuração</div>
+        <div class="filter-bar">
+          <select id="sel-jogo-apu" onchange="carregarApuracao()"><option value="">Selecione o jogo...</option></select>
         </div>
-        <div class="filtro-bar">
-          <select id="filtro-jogo-apuracao" onchange="carregarJogoApuracao()">
-            <option value="">Selecione o jogo encerrado...</option>
-          </select>
-        </div>
-        <div id="painel-apuracao">
-          <div class="empty-state"><span class="emoji">🏆</span><p>Selecione um jogo para apurar.</p></div>
-        </div>
+        <div id="painel-apu"><div class="empty"><span class="icon">🏆</span><p>Selecione um jogo encerrado.</p></div></div>
       </div>
 
-      <!-- ── ABA: FINANCEIRO ─────────────────────────────────────────────── -->
+      <!-- PARTICIPANTES -->
+      <div class="tab-content" id="tab-participantes">
+        <div class="pg-title">Participantes</div>
+        <div id="lista-part"><div class="empty"><span class="icon">👥</span><p>Carregando...</p></div></div>
+      </div>
+
+      <!-- FINANCEIRO -->
       <div class="tab-content" id="tab-financeiro">
-        <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:1.5rem">Resumo financeiro</h2>
-        <div class="financeiro-resumo" id="financeiro-resumo">
-          <div class="stat-card">
-            <div class="stat-label">Acumulado atual</div>
-            <div class="stat-value" id="fin-acumulado">—</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Total arrecadado (todos jogos)</div>
-            <div class="stat-value" id="fin-total">—</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Jogos apurados</div>
-            <div class="stat-value" id="fin-jogos-apurados">—</div>
-          </div>
+        <div class="pg-title">Financeiro</div>
+        <div class="fin-grid">
+          <div class="stat-card"><div class="stat-label">Acumulado atual</div><div class="stat-value" id="fin-ac">—</div></div>
+          <div class="stat-card"><div class="stat-label">Total arrecadado</div><div class="stat-value" id="fin-tot">—</div></div>
+          <div class="stat-card"><div class="stat-label">Jogos apurados</div><div class="stat-value" id="fin-jog">—</div></div>
         </div>
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title"><span class="icon">📋</span> Por jogo</div>
-          </div>
-          <div id="financeiro-por-jogo"></div>
-        </div>
+        <div class="card"><div class="card-header"><div class="card-title"><span class="card-icon">📋</span>Por jogo</div></div><div id="fin-tabela"></div></div>
       </div>
 
-      <!-- ── ABA: CONFIGURAÇÕES ─────────────────────────────────────────── -->
+      <!-- CONFIG -->
       <div class="tab-content" id="tab-config">
-        <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:1.5rem">Configurações do bolão</h2>
-        <div class="card" style="max-width:520px">
-          <div style="display:flex;flex-direction:column;gap:1rem" id="form-config">
-            <div class="input-group">
-              <label>Chave PIX</label>
-              <input type="text" id="cfg-pix-chave" placeholder="CPF, CNPJ, e-mail ou telefone">
-            </div>
-            <div class="input-group">
-              <label>URL do QR Code PIX (imagem)</label>
-              <input type="text" id="cfg-pix-qrcode" placeholder="https://...">
-            </div>
-            <div class="input-group">
-              <label>Valor por palpite (R$)</label>
-              <input type="number" id="cfg-valor" value="10" min="1" max="999">
-            </div>
-            <div class="input-group">
-              <label>Acumulado atual (R$)</label>
-              <input type="number" id="cfg-acumulado" value="0" min="0">
-            </div>
-            <button class="btn btn-primary" onclick="salvarConfig()">💾 Salvar configurações</button>
+        <div class="pg-title">Configurações</div>
+        <div class="card" style="max-width:500px">
+          <div class="form-col">
+            <div class="ig"><label>Chave PIX</label><input type="text" id="cfg-pix-chave" placeholder="CPF, CNPJ, e-mail ou telefone"></div>
+            <div class="ig"><label>URL do QR Code PIX (imagem)</label><input type="text" id="cfg-pix-qr" placeholder="https://..."></div>
+            <div class="ig"><label>Valor por palpite (R$)</label><input type="number" id="cfg-valor" value="10" min="1"></div>
+            <div class="ig"><label>Acumulado atual (R$)</label><input type="number" id="cfg-ac" value="0" min="0"></div>
+            <button class="btn btn-primary" onclick="salvarConfig()">💾 Salvar</button>
           </div>
         </div>
       </div>
@@ -186,62 +129,45 @@
   </div>
 </div>
 
-<!-- ── MODAL: NOVO/EDITAR JOGO ────────────────────────────────────────────── -->
+<!-- MODAL JOGO -->
 <div class="modal-overlay" id="modal-jogo">
   <div class="modal">
     <div class="modal-header">
-      <h3 id="modal-jogo-titulo">Novo jogo</h3>
-      <button class="modal-close" onclick="fecharModalJogo()">×</button>
+      <h3 id="mj-titulo">Novo jogo</h3>
+      <button class="modal-close" onclick="fecharModal('modal-jogo')">×</button>
     </div>
     <div class="modal-body">
-      <input type="hidden" id="jogo-edit-id">
-      <div class="input-group">
-        <label>Adversário</label>
-        <input type="text" id="jogo-adversario" placeholder="Ex: Argentina">
-      </div>
-      <div class="input-group">
-        <label>Data e horário do jogo</label>
-        <input type="datetime-local" id="jogo-data">
-      </div>
-      <div id="jogo-placar-section" style="display:none">
-        <div class="divider"></div>
-        <p style="font-size:.85rem;font-weight:600;color:var(--cinza-texto);margin-bottom:.75rem">Resultado oficial</p>
-        <div class="grid-2" style="gap:.75rem">
-          <div class="input-group">
-            <label>Gols do Brasil</label>
-            <input type="number" id="jogo-placar-brasil" min="0" max="20" value="0">
-          </div>
-          <div class="input-group">
-            <label>Gols do adversário</label>
-            <input type="number" id="jogo-placar-adv" min="0" max="20" value="0">
-          </div>
+      <input type="hidden" id="mj-id">
+      <div class="ig"><label>Adversário</label><input type="text" id="mj-adv" placeholder="Ex: Argentina"></div>
+      <div class="ig"><label>Data e horário</label><input type="datetime-local" id="mj-data"></div>
+      <div class="ig"><label>Acumulado anterior (R$)</label><input type="number" id="mj-ac" value="0" min="0"></div>
+      <div id="mj-placar-sec" style="display:none">
+        <div class="hr"></div>
+        <p style="font-size:.8rem;font-weight:700;color:var(--texto-sub);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.05em">Resultado oficial</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+          <div class="ig"><label>Gols Brasil</label><input type="number" id="mj-gb" min="0" max="20" value="0"></div>
+          <div class="ig"><label>Gols adversário</label><input type="number" id="mj-ga" min="0" max="20" value="0"></div>
         </div>
-      </div>
-      <div class="input-group">
-        <label>Acumulado anterior (R$)</label>
-        <input type="number" id="jogo-acumulado" value="0" min="0">
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" onclick="fecharModalJogo()">Cancelar</button>
-      <button class="btn btn-primary" id="btn-salvar-jogo" onclick="salvarJogo()">Salvar</button>
+      <button class="btn btn-ghost" onclick="fecharModal('modal-jogo')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-mj-salvar" onclick="salvarJogo()">Salvar</button>
     </div>
   </div>
 </div>
 
-<!-- ── MODAL: CONFIRMAÇÃO ─────────────────────────────────────────────────── -->
+<!-- MODAL CONFIRMAÇÃO -->
 <div class="modal-overlay" id="modal-confirm">
   <div class="modal">
     <div class="modal-header">
-      <h3 id="confirm-titulo">Confirmar ação</h3>
-      <button class="modal-close" onclick="fecharModalConfirm()">×</button>
+      <h3 id="mc-titulo">Confirmar</h3>
+      <button class="modal-close" onclick="fecharModal('modal-confirm')">×</button>
     </div>
-    <div class="modal-body">
-      <p id="confirm-texto" style="color:var(--cinza-texto)"></p>
-    </div>
+    <div class="modal-body"><p id="mc-texto" style="color:var(--texto-sub)"></p></div>
     <div class="modal-footer">
-      <button class="btn btn-outline" onclick="fecharModalConfirm()">Cancelar</button>
-      <button class="btn btn-primary" id="btn-confirm-ok">Confirmar</button>
+      <button class="btn btn-ghost" onclick="fecharModal('modal-confirm')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-mc-ok">Confirmar</button>
     </div>
   </div>
 </div>
@@ -250,29 +176,26 @@
 
 <script type="module">
 import { auth } from "./js/firebase.js";
-import {
-  signInWithEmailAndPassword, signOut, onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import { Timestamp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 import {
   getJogos, getJogo, criarJogo, editarJogo, encerrarApostas,
   getPalpitesDoJogo, atualizarPagamento,
   getConfig, updateConfig, onConfig,
-  getApuracoes, getApuracao
+  getApuracoes, getApuracao, getParticipantes
 } from "./js/db.js";
 import { executarApuracao } from "./js/apuracao.js";
-import {
-  formatarData, formatarDataHora, formatarMoeda, badgePagamento, badgeJogo,
-  toast, abrirModal, fecharModal, setLoading, exportarCSV
-} from "./js/ui.js";
-import { Timestamp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import { formatarData, formatarDataHora, formatarMoeda, badgePagamento, badgeJogo, toast, abrirModal, fecharModal, setLoading, exportarCSV } from "./js/ui.js";
 
-// ─── AUTH ─────────────────────────────────────────────────────────────────────
-onAuthStateChanged(auth, (user) => {
+let todosJogos = [], todosPalpites = [], confirmCb = null;
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+onAuthStateChanged(auth, async user => {
   if (user) {
     document.getElementById("tela-login").style.display = "none";
     document.getElementById("tela-painel").style.display = "block";
-    document.getElementById("admin-email-label").textContent = user.email;
-    iniciarPainel();
+    document.getElementById("admin-email").textContent = user.email;
+    await boot();
   } else {
     document.getElementById("tela-login").style.display = "flex";
     document.getElementById("tela-painel").style.display = "none";
@@ -280,429 +203,320 @@ onAuthStateChanged(auth, (user) => {
 });
 
 window.fazerLogin = async function() {
-  const email = document.getElementById("login-email").value.trim();
-  const senha = document.getElementById("login-senha").value;
-  const btn   = document.getElementById("btn-login");
-  const erro  = document.getElementById("login-error");
-  erro.style.display = "none";
-  setLoading(btn, true);
-  try {
-    await signInWithEmailAndPassword(auth, email, senha);
-  } catch(e) {
-    erro.style.display = "block";
-  } finally {
-    setLoading(btn, false);
-  }
+  const em = document.getElementById("l-email").value.trim();
+  const se = document.getElementById("l-senha").value;
+  const er = document.getElementById("login-err");
+  const bt = document.getElementById("btn-login");
+  er.style.display = "none"; setLoading(bt, true);
+  try { await signInWithEmailAndPassword(auth, em, se); }
+  catch(e) { er.style.display = "block"; }
+  finally { setLoading(bt, false); }
 };
+window.fazerLogout = () => signOut(auth);
+document.getElementById("l-senha").addEventListener("keydown", e => { if(e.key==="Enter") window.fazerLogin(); });
 
-window.fazerLogout = async function() {
-  await signOut(auth);
-};
-
-document.getElementById("login-senha").addEventListener("keydown", e => {
-  if (e.key === "Enter") window.fazerLogin();
-});
-
-// ─── INIT PAINEL ─────────────────────────────────────────────────────────────
-let todosJogos = [];
-let todosPalpitesAdmin = [];
-
-async function iniciarPainel() {
+async function boot() {
   await carregarJogos();
-  onConfig((cfg) => {
+  onConfig(cfg => {
     if (!cfg) return;
-    document.getElementById("cfg-pix-chave").value  = cfg.pix_chave || "";
-    document.getElementById("cfg-pix-qrcode").value = cfg.pix_qrcode_url || "";
-    document.getElementById("cfg-valor").value       = cfg.valor_por_palpite ?? 10;
-    document.getElementById("cfg-acumulado").value   = cfg.acumulado_atual ?? 0;
-    document.getElementById("fin-acumulado").textContent = formatarMoeda(cfg.acumulado_atual ?? 0);
+    document.getElementById("cfg-pix-chave").value = cfg.pix_chave || "";
+    document.getElementById("cfg-pix-qr").value    = cfg.pix_qrcode_url || "";
+    document.getElementById("cfg-valor").value     = cfg.valor_por_palpite ?? 10;
+    document.getElementById("cfg-ac").value        = cfg.acumulado_atual ?? 0;
+    document.getElementById("fin-ac").textContent  = formatarMoeda(cfg.acumulado_atual ?? 0);
   });
   await carregarFinanceiro();
+  await carregarParticipantes();
 }
 
-// ─── NAVEGAÇÃO ────────────────────────────────────────────────────────────────
-window.trocarAba = function(aba, btn) {
-  document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
-  document.querySelectorAll(".sidebar-link").forEach(el => el.classList.remove("active"));
-  document.getElementById(`tab-${aba}`).classList.add("active");
+// ── NAVEGAÇÃO ─────────────────────────────────────────────────────────────────
+window.aba = function(nome, btn) {
+  document.querySelectorAll(".tab-content").forEach(e => e.classList.remove("active"));
+  document.querySelectorAll(".sb-btn").forEach(e => e.classList.remove("active"));
+  document.getElementById(`tab-${nome}`).classList.add("active");
   btn.classList.add("active");
 };
 
-// ─── JOGOS ────────────────────────────────────────────────────────────────────
+// ── JOGOS ─────────────────────────────────────────────────────────────────────
 async function carregarJogos() {
   todosJogos = await getJogos();
   renderJogos();
-  preencherSelectJogos();
+  popularSelects();
 }
 
 function renderJogos() {
-  const el = document.getElementById("lista-jogos-admin");
-  if (!todosJogos.length) {
-    el.innerHTML = `<div class="empty-state"><span class="emoji">⚽</span><p>Nenhum jogo cadastrado.</p></div>`;
-    return;
-  }
-
-  el.innerHTML = `
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Adversário</th><th>Data/Hora</th><th>Status</th>
-          <th>Placar</th><th>Acumulado</th><th>Ações</th>
-        </tr></thead>
-        <tbody>
-          ${todosJogos.map(j => `
-            <tr>
-              <td><strong>Brasil × ${j.adversario}</strong></td>
-              <td>${formatarDataHora(j.data)}</td>
-              <td>${badgeJogo(j.status)}</td>
-              <td>${j.placar_brasil !== null ? `${j.placar_brasil} × ${j.placar_adversario}` : "—"}</td>
-              <td>${formatarMoeda(j.acumulado_anterior)}</td>
-              <td>
-                <div style="display:flex;gap:.4rem;flex-wrap:wrap">
-                  <button class="btn btn-outline btn-sm" onclick="abrirModalJogo('${j.id}')">Editar</button>
-                  ${j.status === "agendado" ? `<button class="btn btn-sm" style="background:#e5e7eb;color:#374151" onclick="confirmarEncerrar('${j.id}')">Encerrar apostas</button>` : ""}
-                </div>
-              </td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    </div>
-  `;
+  const el = document.getElementById("lista-jogos");
+  if (!todosJogos.length) { el.innerHTML = `<div class="empty"><span class="icon">⚽</span><p>Nenhum jogo cadastrado.</p></div>`; return; }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Jogo</th><th>Data/Hora</th><th>Status</th><th>Placar</th><th>Acumulado</th><th>Ações</th></tr></thead>
+    <tbody>${todosJogos.map(j => `<tr>
+      <td><strong>🇧🇷 × ${j.adversario}</strong></td>
+      <td style="white-space:nowrap">${formatarDataHora(j.data)}</td>
+      <td>${badgeJogo(j.status)}</td>
+      <td class="tc">${j.placar_brasil !== null ? `<strong>${j.placar_brasil} × ${j.placar_adversario}</strong>` : "—"}</td>
+      <td>${formatarMoeda(j.acumulado_anterior)}</td>
+      <td><div style="display:flex;gap:.35rem;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="abrirModalJogo('${j.id}')">✏️ Editar</button>
+        ${j.status==="agendado" ? `<button class="btn btn-ghost btn-sm" onclick="confirmarEncerrar('${j.id}')">🔒 Encerrar</button>` : ""}
+      </div></td>
+    </tr>`).join("")}</tbody>
+  </table></div>`;
 }
 
-function preencherSelectJogos() {
-  const selPag = document.getElementById("filtro-jogo-pagamentos");
-  const selApu = document.getElementById("filtro-jogo-apuracao");
-  const atual = selPag.value;
-
-  selPag.innerHTML = `<option value="">Selecione o jogo...</option>` +
-    todosJogos.map(j => `<option value="${j.id}">Brasil × ${j.adversario} — ${formatarData(j.data)}</option>`).join("");
-
-  selApu.innerHTML = `<option value="">Selecione o jogo encerrado...</option>` +
-    todosJogos.filter(j => j.status === "encerrado" || j.status === "apurado")
-      .map(j => `<option value="${j.id}">Brasil × ${j.adversario} — ${badgeJogo(j.status).replace(/<[^>]+>/g,"")}</option>`).join("");
-
-  if (atual) selPag.value = atual;
+function popularSelects() {
+  const pag = document.getElementById("sel-jogo-pag");
+  const apu = document.getElementById("sel-jogo-apu");
+  const vPag = pag.value;
+  pag.innerHTML = `<option value="">Selecione o jogo...</option>` + todosJogos.map(j => `<option value="${j.id}">🇧🇷 × ${j.adversario} — ${formatarData(j.data)}</option>`).join("");
+  apu.innerHTML = `<option value="">Selecione o jogo...</option>` + todosJogos.filter(j => j.status !== "agendado").map(j => `<option value="${j.id}">🇧🇷 × ${j.adversario} ${badgeJogo(j.status).replace(/<[^>]+>/g,"")}</option>`).join("");
+  if (vPag) pag.value = vPag;
 }
 
-// Modal Jogo
 window.abrirModalJogo = async function(id = null) {
-  document.getElementById("jogo-edit-id").value = id || "";
-  document.getElementById("modal-jogo-titulo").textContent = id ? "Editar jogo" : "Novo jogo";
-  document.getElementById("jogo-placar-section").style.display = id ? "block" : "none";
-
+  document.getElementById("mj-id").value   = id || "";
+  document.getElementById("mj-titulo").textContent = id ? "Editar jogo" : "Novo jogo";
+  document.getElementById("mj-placar-sec").style.display = id ? "block" : "none";
   if (id) {
     const j = await getJogo(id);
-    document.getElementById("jogo-adversario").value = j.adversario;
-    const d = j.data.toDate();
-    document.getElementById("jogo-data").value = d.toISOString().slice(0,16);
-    document.getElementById("jogo-placar-brasil").value = j.placar_brasil ?? 0;
-    document.getElementById("jogo-placar-adv").value = j.placar_adversario ?? 0;
-    document.getElementById("jogo-acumulado").value = j.acumulado_anterior ?? 0;
+    document.getElementById("mj-adv").value  = j.adversario;
+    const _d = j.data.toDate();
+    const _local = new Date(_d.getTime() - _d.getTimezoneOffset() * 60000);
+    document.getElementById("mj-data").value = _local.toISOString().slice(0,16);
+    document.getElementById("mj-ac").value   = j.acumulado_anterior ?? 0;
+    document.getElementById("mj-gb").value   = j.placar_brasil ?? 0;
+    document.getElementById("mj-ga").value   = j.placar_adversario ?? 0;
   } else {
-    document.getElementById("jogo-adversario").value = "";
-    document.getElementById("jogo-data").value = "";
-    document.getElementById("jogo-acumulado").value = 0;
+    document.getElementById("mj-adv").value = "";
+    document.getElementById("mj-data").value = "";
+    document.getElementById("mj-ac").value  = 0;
   }
-
   abrirModal("modal-jogo");
 };
 
-window.fecharModalJogo = () => fecharModal("modal-jogo");
-
 window.salvarJogo = async function() {
-  const btn = document.getElementById("btn-salvar-jogo");
-  const id  = document.getElementById("jogo-edit-id").value;
-  const adv = document.getElementById("jogo-adversario").value.trim();
-  const dataStr = document.getElementById("jogo-data").value;
-
-  if (!adv) { toast("Informe o nome do adversário.", "error"); return; }
-  if (!dataStr) { toast("Informe a data e horário do jogo.", "error"); return; }
-
-  const data = Timestamp.fromDate(new Date(dataStr));
-  const acumulado = parseFloat(document.getElementById("jogo-acumulado").value) || 0;
-
+  const btn = document.getElementById("btn-mj-salvar");
+  const id  = document.getElementById("mj-id").value;
+  const adv = document.getElementById("mj-adv").value.trim();
+  const ds  = document.getElementById("mj-data").value;
+  if (!adv) { toast("Informe o adversário.", "error"); return; }
+  if (!ds)  { toast("Informe a data.", "error"); return; }
+  const data = Timestamp.fromDate(new Date(ds));
+  const ac   = parseFloat(document.getElementById("mj-ac").value) || 0;
   setLoading(btn, true);
   try {
     if (id) {
-      const placarBrasil = parseInt(document.getElementById("jogo-placar-brasil").value);
-      const placarAdv    = parseInt(document.getElementById("jogo-placar-adv").value);
-      await editarJogo(id, {
-        adversario: adv, data,
-        placar_brasil: isNaN(placarBrasil) ? null : placarBrasil,
-        placar_adversario: isNaN(placarAdv) ? null : placarAdv,
-        acumulado_anterior: acumulado
-      });
+      const gb = parseInt(document.getElementById("mj-gb").value);
+      const ga = parseInt(document.getElementById("mj-ga").value);
+      await editarJogo(id, { adversario: adv, data, acumulado_anterior: ac,
+        placar_brasil: isNaN(gb) ? null : gb, placar_adversario: isNaN(ga) ? null : ga });
       toast("Jogo atualizado!", "success");
     } else {
-      await criarJogo({ adversario: adv, data, acumulado_anterior: acumulado });
+      await criarJogo({ adversario: adv, data, acumulado_anterior: ac });
       toast("Jogo criado!", "success");
     }
     fecharModal("modal-jogo");
     await carregarJogos();
-  } catch(e) {
-    toast("Erro ao salvar jogo.", "error");
-    console.error(e);
-  } finally {
-    setLoading(btn, false);
-  }
+  } catch(e) { toast("Erro ao salvar.", "error"); }
+  finally { setLoading(btn, false); }
 };
 
 window.confirmarEncerrar = function(id) {
-  abrirConfirm("Encerrar apostas", "Após encerrar, nenhum palpite poderá ser registrado ou alterado.", async () => {
+  confirm2("Encerrar apostas", "Após encerrar, nenhum palpite poderá ser registrado. Esta ação não pode ser desfeita.", async () => {
     await encerrarApostas(id);
     toast("Apostas encerradas!", "success");
     await carregarJogos();
   });
 };
 
-// ─── PAGAMENTOS ───────────────────────────────────────────────────────────────
-window.carregarPalpitesAdmin = async function() {
-  const jogoId = document.getElementById("filtro-jogo-pagamentos").value;
-  if (!jogoId) return;
-  todosPalpitesAdmin = await getPalpitesDoJogo(jogoId);
-  filtrarPalpitesAdmin();
+// ── PAGAMENTOS ────────────────────────────────────────────────────────────────
+window.carregarPagamentos = async function() {
+  const jid = document.getElementById("sel-jogo-pag").value;
+  if (!jid) return;
+  todosPalpites = await getPalpitesDoJogo(jid);
+  filtrarPagamentos();
 };
 
-window.filtrarPalpitesAdmin = function() {
-  const statusFiltro = document.getElementById("filtro-status-pagamentos").value;
-  const jogoId = document.getElementById("filtro-jogo-pagamentos").value;
-  if (!jogoId) return;
-
-  const jogo = todosJogos.find(j => j.id === jogoId);
-  const filtrados = statusFiltro
-    ? todosPalpitesAdmin.filter(p => p.status_pagamento === statusFiltro)
-    : todosPalpitesAdmin;
-
-  const el = document.getElementById("lista-palpites-admin");
-
-  if (!filtrados.length) {
-    el.innerHTML = `<div class="empty-state"><span class="emoji">📭</span><p>Nenhum palpite encontrado.</p></div>`;
-    return;
-  }
-
-  el.innerHTML = `
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Participante</th><th>Palpite</th><th>Status</th><th>Ações</th>
-        </tr></thead>
-        <tbody>
-          ${filtrados.map(p => `
-            <tr>
-              <td><strong>${p.participante_nome}</strong></td>
-              <td class="placar-cell">Brasil ${p.gols_brasil} × ${p.gols_adversario} ${jogo?.adversario || ""}</td>
-              <td>${badgePagamento(p.status_pagamento)}</td>
-              <td>
-                <div style="display:flex;gap:.4rem">
-                  ${p.status_pagamento !== "confirmado" ? `<button class="btn btn-sm" style="background:#DCFCE7;color:#14532D" onclick="alterarPagamento('${p.id}','confirmado')">✓ Confirmar</button>` : ""}
-                  ${p.status_pagamento !== "cancelado"  ? `<button class="btn btn-sm" style="background:#FEE2E2;color:#991B1B" onclick="alterarPagamento('${p.id}','cancelado')">✗ Cancelar</button>`  : ""}
-                  ${p.status_pagamento !== "pendente"   ? `<button class="btn btn-sm" style="background:#FEF9C3;color:#854D0E" onclick="alterarPagamento('${p.id}','pendente')">↩ Pendente</button>`   : ""}
-                </div>
-              </td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    </div>
-  `;
+window.filtrarPagamentos = function() {
+  const st  = document.getElementById("sel-status-pag").value;
+  const jid = document.getElementById("sel-jogo-pag").value;
+  const j   = todosJogos.find(x => x.id === jid);
+  const fil = st ? todosPalpites.filter(p => p.status_pagamento === st) : todosPalpites;
+  const el  = document.getElementById("lista-pag");
+  if (!fil.length) { el.innerHTML = `<div class="empty"><span class="icon">📭</span><p>Nenhum palpite encontrado.</p></div>`; return; }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Participante</th><th>ID</th><th>Palpite</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody>${fil.map(p => `<tr>
+      <td><strong>${p.participante_nome}</strong></td>
+      <td style="font-size:.72rem;font-family:monospace;color:var(--texto-sub)">${(p.participante_id||"").slice(0,8).toUpperCase()}</td>
+      <td class="tc"><strong>🇧🇷 ${p.gols_brasil} × ${p.gols_adversario}</strong> ${j?.adversario||""}</td>
+      <td>${badgePagamento(p.status_pagamento)}</td>
+      <td><div style="display:flex;gap:.3rem;flex-wrap:wrap">
+        ${p.status_pagamento !== "confirmado" ? `<button class="btn btn-sm" style="background:#DCFCE7;color:#14532D" onclick="setPagamento('${p.id}','confirmado')">✓</button>` : ""}
+        ${p.status_pagamento !== "cancelado"  ? `<button class="btn btn-sm" style="background:#FEE2E2;color:#991B1B" onclick="setPagamento('${p.id}','cancelado')">✗</button>`  : ""}
+        ${p.status_pagamento !== "pendente"   ? `<button class="btn btn-sm" style="background:#FEF9C3;color:#854D0E" onclick="setPagamento('${p.id}','pendente')">↩</button>`   : ""}
+      </div></td>
+    </tr>`).join("")}</tbody>
+  </table></div>`;
 };
 
-window.alterarPagamento = async function(palpiteId, status) {
+window.setPagamento = async function(pid, status) {
   try {
-    await atualizarPagamento(palpiteId, status);
-    toast(`Pagamento marcado como ${status}.`, "success");
-    await window.carregarPalpitesAdmin();
-  } catch(e) {
-    toast("Erro ao atualizar.", "error");
+    await atualizarPagamento(pid, status);
+    toast(`Marcado como ${status}.`, "success");
+    // Resetar filtro para "Todos" para que o palpite não desapareça da lista
+    document.getElementById("sel-status-pag").value = "";
+    await window.carregarPagamentos();
   }
+  catch(e) { toast("Erro.", "error"); }
 };
 
-window.exportarPalpites = function() {
-  if (!todosPalpitesAdmin.length) { toast("Nenhum palpite para exportar.", "warning"); return; }
-  const dados = todosPalpitesAdmin.map(p => ({
+window.exportarCSVPalpites = function() {
+  if (!todosPalpites.length) { toast("Nenhum palpite.", "warning"); return; }
+  const jid = document.getElementById("sel-jogo-pag").value;
+  const j   = todosJogos.find(x => x.id === jid);
+  exportarCSV(todosPalpites.map(p => ({
     Participante: p.participante_nome,
+    ID: (p.participante_id||"").slice(0,8).toUpperCase(),
+    Jogo: `Brasil x ${j?.adversario||""}`,
     Gols_Brasil: p.gols_brasil,
     Gols_Adversario: p.gols_adversario,
-    Status_Pagamento: p.status_pagamento,
-    Registrado_em: p.criado_em ? p.criado_em.toDate().toLocaleString("pt-BR") : ""
-  }));
-  exportarCSV(dados, "palpites-bolao.csv");
+    Status: p.status_pagamento,
+    Data: p.criado_em ? p.criado_em.toDate().toLocaleString("pt-BR") : ""
+  })), `palpites-${j?.adversario||"jogo"}.csv`);
 };
 
-// ─── APURAÇÃO ─────────────────────────────────────────────────────────────────
-window.carregarJogoApuracao = async function() {
-  const jogoId = document.getElementById("filtro-jogo-apuracao").value;
-  const el = document.getElementById("painel-apuracao");
+// ── APURAÇÃO ──────────────────────────────────────────────────────────────────
+window.carregarApuracao = async function() {
+  const jid = document.getElementById("sel-jogo-apu").value;
+  const el  = document.getElementById("painel-apu");
+  if (!jid) { el.innerHTML = `<div class="empty"><span class="icon">🏆</span><p>Selecione um jogo.</p></div>`; return; }
+  const j     = await getJogo(jid);
+  const pals  = await getPalpitesDoJogo(jid);
+  const conf  = pals.filter(p => p.status_pagamento === "confirmado");
+  const apur  = await getApuracao(jid);
 
-  if (!jogoId) {
-    el.innerHTML = `<div class="empty-state"><span class="emoji">🏆</span><p>Selecione um jogo para apurar.</p></div>`;
-    return;
-  }
+  const placarHTML = j.placar_brasil !== null
+    ? `<div style="font-size:1.8rem;font-weight:900;color:var(--verde);text-align:center;margin:.75rem 0">Brasil ${j.placar_brasil} × ${j.placar_adversario} ${j.adversario}</div>`
+    : `<div style="background:#FEF2F2;border-radius:8px;padding:.65rem;font-size:.83rem;color:#991B1B;margin:.5rem 0">⚠️ Placar não informado. Edite o jogo para inserir.</div>`;
 
-  const jogo = await getJogo(jogoId);
-  const palpites = await getPalpitesDoJogo(jogoId);
-  const confirmados = palpites.filter(p => p.status_pagamento === "confirmado");
-  const apuracaoExistente = await getApuracao(jogoId);
-
-  let placarHtml = "";
-  if (jogo.placar_brasil !== null) {
-    placarHtml = `<div style="font-size:2rem;font-weight:900;color:var(--verde);text-align:center;margin:.75rem 0">
-      Brasil ${jogo.placar_brasil} × ${jogo.placar_adversario} ${jogo.adversario}
+  if (apur) {
+    el.innerHTML = `<div class="card">
+      <div style="font-size:.82rem;font-weight:700;color:var(--verde-esc);margin-bottom:.75rem">✅ Apurado</div>
+      ${placarHTML}
+      <div class="apuracao-box"><h4>Resultado</h4>
+        <div class="ap-row"><span class="ap-key">Palpites confirmados</span><span class="ap-val">${apur.total_palpites_confirmados}</span></div>
+        <div class="ap-row"><span class="ap-key">Arrecadado</span><span class="ap-val">${formatarMoeda(apur.valor_arrecadado)}</span></div>
+        <div class="ap-row"><span class="ap-key">Acumulado anterior</span><span class="ap-val">${formatarMoeda(apur.acumulado_anterior)}</span></div>
+        <div class="ap-row"><span class="ap-key">Total</span><span class="ap-val ap-big">${formatarMoeda(apur.valor_total)}</span></div>
+        <div class="ap-row"><span class="ap-key">Vencedores</span><span class="ap-val">${apur.quantidade_vencedores || "Nenhum — acumulou"}</span></div>
+        ${apur.quantidade_vencedores > 0 ? `<div class="ap-row"><span class="ap-key">Por vencedor</span><span class="ap-val ap-big">${formatarMoeda(apur.valor_por_vencedor)}</span></div>` : ""}
+      </div>
+      ${apur.vencedores?.length ? `
+        <div style="margin-top:1rem">
+          ${apur.vencedores.map(v => `<div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--borda);font-size:.88rem">
+            <div><strong>${v.nome}</strong><div style="font-size:.72rem;color:var(--texto-sub)">${v.gols_brasil} × ${v.gols_adversario}</div></div>
+            <div style="text-align:right"><div style="font-size:.72rem;color:var(--texto-sub)">PIX</div><code style="font-size:.78rem">${v.pix_chave}</code></div>
+          </div>`).join("")}
+        </div>` : ""}
     </div>`;
-  } else {
-    placarHtml = `<p style="font-size:.85rem;color:#b91c1c">⚠️ Placar oficial ainda não informado. Edite o jogo para informar.</p>`;
-  }
-
-  if (apuracaoExistente) {
-    const a = apuracaoExistente;
-    el.innerHTML = `
-      <div class="card">
-        <div style="font-size:.85rem;font-weight:600;color:var(--verde-esc);margin-bottom:1rem">✅ Jogo já apurado</div>
-        ${placarHtml}
-        <div class="apuracao-resultado">
-          <h4>Resultado da apuração</h4>
-          <div class="apuracao-linha"><span class="key">Palpites confirmados</span><span class="val">${a.total_palpites_confirmados}</span></div>
-          <div class="apuracao-linha"><span class="key">Valor arrecadado</span><span class="val">${formatarMoeda(a.valor_arrecadado)}</span></div>
-          <div class="apuracao-linha"><span class="key">Acumulado anterior</span><span class="val">${formatarMoeda(a.acumulado_anterior)}</span></div>
-          <div class="apuracao-linha"><span class="key">Premiação total</span><span class="val val-destaque">${formatarMoeda(a.valor_total)}</span></div>
-          <div class="apuracao-linha"><span class="key">Vencedores</span><span class="val">${a.quantidade_vencedores || "Nenhum — acumulou"}</span></div>
-          ${a.quantidade_vencedores > 0 ? `<div class="apuracao-linha"><span class="key">Valor por vencedor</span><span class="val val-destaque">${formatarMoeda(a.valor_por_vencedor)}</span></div>` : ""}
-        </div>
-        ${a.vencedores?.length ? `<div style="margin-top:1rem">${a.vencedores.map(v=>`<span class="vencedor-chip">🏆 ${v.nome} (${v.gols_brasil}×${v.gols_adversario})</span>`).join("")}</div>` : ""}
-      </div>
-    `;
     return;
   }
 
-  el.innerHTML = `
-    <div class="card">
-      <p style="font-size:.85rem;color:var(--cinza-texto);margin-bottom:.75rem">
-        Jogo: <strong>Brasil × ${jogo.adversario}</strong> &nbsp;·&nbsp; ${formatarData(jogo.data)}
-      </p>
-      ${placarHtml}
-      <div class="grid-2" style="margin:1rem 0">
-        <div class="stat-card">
-          <div class="stat-label">Total de palpites</div>
-          <div class="stat-value">${palpites.length}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Confirmados</div>
-          <div class="stat-value">${confirmados.length}</div>
-        </div>
-      </div>
-      ${jogo.placar_brasil !== null && jogo.status !== "apurado"
-        ? `<button class="btn btn-amarelo btn-full" id="btn-apurar" onclick="realizarApuracao('${jogoId}')">
-             🏆 Executar apuração
-           </button>`
-        : `<div style="background:#FEF9C3;border-radius:8px;padding:.75rem;font-size:.85rem;color:#854D0E">
-             Informe o placar oficial no cadastro do jogo antes de apurar.
-           </div>`
-      }
+  el.innerHTML = `<div class="card">
+    <p style="font-size:.85rem;color:var(--texto-sub);margin-bottom:.5rem"><strong>🇧🇷 Brasil × ${j.adversario}</strong> · ${formatarData(j.data)}</p>
+    ${placarHTML}
+    <div class="grid-2" style="margin:.85rem 0">
+      <div class="stat-card"><div class="stat-label">Total palpites</div><div class="stat-value">${pals.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Confirmados</div><div class="stat-value">${conf.length}</div></div>
     </div>
-  `;
-};
-
-window.realizarApuracao = function(jogoId) {
-  abrirConfirm(
-    "Executar apuração",
-    "Esta ação irá calcular os vencedores e atualizar o acumulado. Não pode ser desfeita.",
-    async () => {
-      const btn = document.getElementById("btn-apurar");
-      setLoading(btn, true);
-      try {
-        const resultado = await executarApuracao(jogoId);
-        toast(resultado.quantidade_vencedores > 0
-          ? `${resultado.quantidade_vencedores} vencedor(es) encontrado(s)! Prêmio: ${formatarMoeda(resultado.valor_total)}`
-          : "Nenhum vencedor. Valor acumulado para o próximo jogo."
-        , "success");
-        await carregarJogos();
-        await window.carregarJogoApuracao();
-        await carregarFinanceiro();
-      } catch(e) {
-        toast(e.message || "Erro na apuração.", "error");
-        console.error(e);
-      } finally {
-        if (btn) setLoading(btn, false);
-      }
+    ${j.placar_brasil !== null && j.status !== "apurado"
+      ? `<button class="btn btn-amarelo btn-full" id="btn-apurar" onclick="doApuracao('${jid}')">🏆 Executar apuração</button>`
+      : `<div style="background:#FEF9C3;border-radius:8px;padding:.65rem;font-size:.83rem;color:#854D0E">Informe o placar oficial no cadastro do jogo antes de apurar.</div>`
     }
-  );
+  </div>`;
 };
 
-// ─── FINANCEIRO ───────────────────────────────────────────────────────────────
-async function carregarFinanceiro() {
-  const apuracoes = await getApuracoes();
-  const totalArrecadado = apuracoes.reduce((s, a) => s + (a.valor_arrecadado || 0), 0);
+window.doApuracao = function(jid) {
+  confirm2("Executar apuração", "Esta ação calculará os vencedores e atualizará o acumulado. Não pode ser desfeita.", async () => {
+    const btn = document.getElementById("btn-apurar");
+    setLoading(btn, true);
+    try {
+      const r = await executarApuracao(jid);
+      toast(r.quantidade_vencedores > 0
+        ? `${r.quantidade_vencedores} vencedor(es)! Prêmio: ${formatarMoeda(r.valor_total)}`
+        : "Nenhum vencedor. Valor acumulado.", "success");
+      await carregarJogos();
+      await window.carregarApuracao();
+      await carregarFinanceiro();
+    } catch(e) { toast(e.message || "Erro.", "error"); }
+    finally { if (document.getElementById("btn-apurar")) setLoading(document.getElementById("btn-apurar"), false); }
+  });
+};
 
-  document.getElementById("fin-total").textContent = formatarMoeda(totalArrecadado);
-  document.getElementById("fin-jogos-apurados").textContent = apuracoes.length;
-
-  const el = document.getElementById("financeiro-por-jogo");
-  if (!apuracoes.length) {
-    el.innerHTML = `<div class="empty-state"><span class="emoji">📊</span><p>Nenhuma apuração realizada.</p></div>`;
-    return;
-  }
-
-  el.innerHTML = `
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Jogo</th><th>Placar</th><th>Apostas</th><th>Arrecadado</th>
-          <th>Acumulado anterior</th><th>Premiação</th><th>Vencedores</th>
-        </tr></thead>
-        <tbody>
-          ${apuracoes.map(a => `
-            <tr>
-              <td>Brasil × ${a.adversario}</td>
-              <td class="placar-cell">${a.placar_brasil} × ${a.placar_adversario}</td>
-              <td>${a.total_palpites_confirmados}</td>
-              <td>${formatarMoeda(a.valor_arrecadado)}</td>
-              <td>${formatarMoeda(a.acumulado_anterior)}</td>
-              <td><strong>${formatarMoeda(a.valor_total)}</strong></td>
-              <td>${a.quantidade_vencedores > 0 ? a.vencedores.map(v=>v.nome).join(", ") : "—"}</td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    </div>
-  `;
+// ── PARTICIPANTES ─────────────────────────────────────────────────────────────
+async function carregarParticipantes() {
+  const parts = await getParticipantes();
+  const el    = document.getElementById("lista-part");
+  if (!parts.length) { el.innerHTML = `<div class="empty"><span class="icon">👥</span><p>Nenhum participante.</p></div>`; return; }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Nome</th><th>ID</th><th>Chave PIX</th><th>Cadastro</th></tr></thead>
+    <tbody>${parts.map(p => `<tr>
+      <td><strong>${p.nome}</strong></td>
+      <td style="font-family:monospace;font-size:.78rem">${(p.short_id || p.id.slice(0,8)).toUpperCase()}</td>
+      <td style="font-size:.83rem"><code>${p.pix_chave || "—"}</code></td>
+      <td style="font-size:.78rem;color:var(--texto-sub)">${p.criado_em ? formatarDataHora(p.criado_em) : "—"}</td>
+    </tr>`).join("")}</tbody>
+  </table></div>`;
 }
 
-// ─── CONFIGURAÇÕES ────────────────────────────────────────────────────────────
+// ── FINANCEIRO ────────────────────────────────────────────────────────────────
+async function carregarFinanceiro() {
+  const apurs = await getApuracoes();
+  const tot   = apurs.reduce((s, a) => s + (a.valor_arrecadado || 0), 0);
+  document.getElementById("fin-tot").textContent = formatarMoeda(tot);
+  document.getElementById("fin-jog").textContent = apurs.length;
+  const el = document.getElementById("fin-tabela");
+  if (!apurs.length) { el.innerHTML = `<div class="empty"><span class="icon">📊</span><p>Nenhuma apuração.</p></div>`; return; }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Jogo</th><th>Placar</th><th>Apostas</th><th>Arrecadado</th><th>Acum. ant.</th><th>Total</th><th>Vencedores</th></tr></thead>
+    <tbody>${apurs.map(a => `<tr>
+      <td>Brasil × ${a.adversario}</td>
+      <td class="tc">${a.placar_brasil} × ${a.placar_adversario}</td>
+      <td class="tc">${a.total_palpites_confirmados}</td>
+      <td>${formatarMoeda(a.valor_arrecadado)}</td>
+      <td>${formatarMoeda(a.acumulado_anterior)}</td>
+      <td><strong>${formatarMoeda(a.valor_total)}</strong></td>
+      <td>${a.quantidade_vencedores > 0 ? a.vencedores.map(v=>v.nome).join(", ") : "—"}</td>
+    </tr>`).join("")}</tbody>
+  </table></div>`;
+}
+
+// ── CONFIG ────────────────────────────────────────────────────────────────────
 window.salvarConfig = async function() {
-  const dados = {
-    pix_chave:       document.getElementById("cfg-pix-chave").value.trim(),
-    pix_qrcode_url:  document.getElementById("cfg-pix-qrcode").value.trim(),
-    valor_por_palpite: parseFloat(document.getElementById("cfg-valor").value) || 10,
-    acumulado_atual:   parseFloat(document.getElementById("cfg-acumulado").value) || 0,
-  };
   try {
-    await updateConfig(dados);
+    await updateConfig({
+      pix_chave:       document.getElementById("cfg-pix-chave").value.trim(),
+      pix_qrcode_url:  document.getElementById("cfg-pix-qr").value.trim(),
+      valor_por_palpite: parseFloat(document.getElementById("cfg-valor").value) || 10,
+      acumulado_atual:   parseFloat(document.getElementById("cfg-ac").value) || 0,
+    });
     toast("Configurações salvas!", "success");
-  } catch(e) {
-    toast("Erro ao salvar.", "error");
-  }
+  } catch(e) { toast("Erro.", "error"); }
 };
 
-// ─── MODAL CONFIRMAÇÃO ────────────────────────────────────────────────────────
-let confirmCallback = null;
-
-function abrirConfirm(titulo, texto, callback) {
-  document.getElementById("confirm-titulo").textContent = titulo;
-  document.getElementById("confirm-texto").textContent = texto;
-  confirmCallback = callback;
+// ── MODAL CONFIRM ─────────────────────────────────────────────────────────────
+function confirm2(titulo, texto, cb) {
+  document.getElementById("mc-titulo").textContent = titulo;
+  document.getElementById("mc-texto").textContent  = texto;
+  confirmCb = cb;
   abrirModal("modal-confirm");
 }
-
-window.fecharModalConfirm = () => fecharModal("modal-confirm");
-
-document.getElementById("btn-confirm-ok").addEventListener("click", async () => {
+document.getElementById("btn-mc-ok").addEventListener("click", async () => {
   fecharModal("modal-confirm");
-  if (confirmCallback) await confirmCallback();
-  confirmCallback = null;
+  if (confirmCb) await confirmCb();
+  confirmCb = null;
 });
+window.fecharModal = fecharModal;
 </script>
-
 </body>
 </html>

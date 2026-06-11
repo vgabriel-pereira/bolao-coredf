@@ -10,6 +10,17 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // ── Participantes ─────────────────────────────────────────────────────────
+    // Qualquer pessoa pode criar seu próprio perfil (sem autenticação)
+    // Apenas admin pode excluir
+    match /participantes/{uid} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasAll([
+             "nome", "pix_chave", "short_id", "criado_em"
+           ]);
+      allow update, delete: if isAdmin();
+    }
+
     // ── Jogos ─────────────────────────────────────────────────────────────────
     // Qualquer pessoa pode ler; apenas admin pode criar/editar/excluir
     match /jogos/{jogoId} {
@@ -23,13 +34,12 @@ service cloud.firestore {
     match /palpites/{palpiteId} {
       allow read: if true;
 
-      // Criação pública: não permite sobrescrever status_pagamento
-      // (ele é sempre definido como "pendente" no server via Cloud Function
-      //  ou fixado no cliente — esta regra garante que o campo não venha adulterado)
-      allow create: if request.auth == null
-        && request.resource.data.status_pagamento == "pendente"
+      // Criação pública: removida restrição de request.auth == null
+      // para compatibilidade com usuários autenticados e não autenticados.
+      // Garante que status_pagamento seja "pendente" e campos obrigatórios presentes.
+      allow create: if request.resource.data.status_pagamento == "pendente"
         && request.resource.data.keys().hasAll([
-             "jogo_id", "participante_nome",
+             "jogo_id", "participante_id", "participante_nome",
              "gols_brasil", "gols_adversario",
              "status_pagamento", "criado_em"
            ]);

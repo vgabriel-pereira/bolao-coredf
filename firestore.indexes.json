@@ -1,0 +1,22 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "palpites",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "jogo_id", "order": "ASCENDING" },
+        { "fieldPath": "criado_em", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "palpites",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "jogo_id", "order": "ASCENDING" },
+        { "fieldPath": "participante_id", "order": "ASCENDING" },
+        { "fieldPath": "criado_em", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
